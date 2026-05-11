@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1"/>
+<title>AssessoriaMax · Login</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#080808;--card:#111;--border:#1e1e1e;--border2:#2a2a2a;
+  --gold:#d4a843;--gold2:#f0c85a;--gdim:rgba(212,168,67,.1);--gbrd:rgba(212,168,67,.25);
+  --text:#f0f0f0;--muted:#666;--red:#e74c3c;
+}
+html,body{
+  background:var(--bg);color:var(--text);
+  font-family:'Barlow',sans-serif;
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;
+}
+
+/* FUNDO COM BRILHO */
+.bg-glow{
+  position:fixed;inset:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 50% at 20% 50%, rgba(212,168,67,.06) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(212,168,67,.04) 0%, transparent 70%);
+}
+
+/* CARD */
+.card{
+  width:100%;max-width:380px;padding:40px 36px 36px;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;
+  position:relative;z-index:1;
+  box-shadow:0 24px 64px rgba(0,0,0,.6);
+  margin:16px;
+}
+.card::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  border-radius:16px 16px 0 0;
+}
+
+/* LOGO */
+.logo-wrap{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:28px}
+.logo-wrap img{width:42px;height:42px;object-fit:contain}
+.logo-text .mark{
+  font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;
+  color:var(--gold);line-height:1;
+}
+.logo-text .sub{
+  font-size:9px;color:var(--muted);letter-spacing:2px;
+  text-transform:uppercase;margin-top:2px;
+}
+
+/* TÍTULO */
+.login-title{
+  font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;
+  color:var(--text);text-align:center;margin-bottom:6px;
+}
+.login-sub{
+  font-size:12px;color:var(--muted);text-align:center;margin-bottom:28px;
+}
+
+/* FORM */
+.fg{margin-bottom:14px}
+.fl{
+  display:block;font-size:10px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+}
+.fi{
+  width:100%;background:#0d0d0d;border:1.5px solid var(--border2);
+  border-radius:9px;padding:12px 14px;font-size:14px;color:var(--text);
+  font-family:'Barlow',sans-serif;outline:none;transition:border .2s,box-shadow .2s;
+}
+.fi:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,168,67,.08)}
+.fi::placeholder{color:#333}
+
+/* PASSWORD TOGGLE */
+.pass-wrap{position:relative}
+.pass-wrap .fi{padding-right:42px}
+.pass-eye{
+  position:absolute;right:13px;top:50%;transform:translateY(-50%);
+  background:none;border:none;cursor:pointer;color:var(--muted);
+  display:flex;align-items:center;padding:4px;transition:color .15s;
+}
+.pass-eye:hover{color:var(--gold)}
+
+/* ERRO */
+.error-msg{
+  background:rgba(231,76,60,.1);border:1px solid rgba(231,76,60,.3);
+  border-radius:8px;padding:10px 14px;font-size:12px;color:var(--red);
+  margin-bottom:14px;display:none;align-items:center;gap:8px;
+}
+.error-msg.show{display:flex}
+
+/* BOTÃO */
+.btn{
+  width:100%;padding:14px;background:var(--gold);border:none;border-radius:10px;
+  font-size:15px;font-weight:700;color:#000;font-family:'Barlow',sans-serif;
+  cursor:pointer;letter-spacing:0.5px;transition:opacity .15s,transform .1s;
+  margin-top:6px;position:relative;overflow:hidden;
+}
+.btn:hover{opacity:.9}
+.btn:active{transform:scale(.98)}
+.btn.loading{opacity:.7;pointer-events:none}
+.btn-spinner{
+  display:none;position:absolute;inset:0;align-items:center;justify-content:center;
+  background:var(--gold);
+}
+.btn.loading .btn-spinner{display:flex}
+.spinner{
+  width:18px;height:18px;border:2px solid rgba(0,0,0,.3);
+  border-top-color:#000;border-radius:50%;animation:spin .7s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* RODAPÉ */
+.card-foot{
+  margin-top:24px;padding-top:18px;border-top:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;gap:6px;
+}
+.card-foot svg{flex-shrink:0}
+.card-foot span{font-size:11px;color:var(--muted)}
+</style>
+</head>
+<body>
+
+<div class="bg-glow"></div>
+
+<div class="card">
+
+  <!-- LOGO -->
+  <div class="logo-wrap">
+    <img src="data:image/png;base64,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" alt="logo"/>
+    <div class="logo-text">
+      <div class="mark">AssessoriaMax</div>
+      <div class="sub">Dashboard</div>
+    </div>
+  </div>
+
+  <div class="login-title">Acesso ao Dashboard</div>
+  <div class="login-sub">Entre com suas credenciais para continuar</div>
+
+  <!-- ERRO -->
+  <div class="error-msg" id="errorMsg">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    Usuário ou senha incorretos
+  </div>
+
+  <!-- CAMPOS -->
+  <div class="fg">
+    <label class="fl">Usuário</label>
+    <input class="fi" id="inputUser" type="text" placeholder="admin" autocomplete="username" autofocus/>
+  </div>
+
+  <div class="fg">
+    <label class="fl">Senha</label>
+    <div class="pass-wrap">
+      <input class="fi" id="inputPass" type="password" placeholder="••••••••" autocomplete="current-password"/>
+      <button class="pass-eye" id="eyeBtn" onclick="toggleEye()" tabindex="-1" type="button">
+        <svg id="eyeIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- BOTÃO -->
+  <button class="btn" id="loginBtn" onclick="doLogin()">
+    Entrar
+    <div class="btn-spinner"><div class="spinner"></div></div>
+  </button>
+
+  <!-- RODAPÉ -->
+  <div class="card-foot">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2">
+      <rect x="3" y="11" width="18" height="11" rx="2"/>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+    <span>Acesso protegido · AssessoriaMax</span>
+  </div>
+</div>
+
+<script>
+// Credenciais em hash SHA-256
+const VALID_USER = "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918";
+const VALID_PASS = "03ac674216f3e15c761ee1a5e255f067953623c8b388b4459e13f978d7c846f4";
+const REDIRECT   = "https://assessoriamax.vercel.app/dashboard.html";
+const SESSION_KEY = "am_auth";
+
+// Se já está logado, redireciona direto
+if(sessionStorage.getItem(SESSION_KEY) === "true"){
+  window.location.href = REDIRECT;
+}
+
+// SHA-256 via Web Crypto API
+async function sha256(str){
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+
+async function doLogin(){
+  const user = document.getElementById("inputUser").value.trim();
+  const pass = document.getElementById("inputPass").value;
+  const err  = document.getElementById("errorMsg");
+  const btn  = document.getElementById("loginBtn");
+
+  if(!user || !pass){
+    err.classList.add("show");
+    return;
+  }
+
+  btn.classList.add("loading");
+  err.classList.remove("show");
+
+  const [uHash, pHash] = await Promise.all([sha256(user), sha256(pass)]);
+
+  await new Promise(r => setTimeout(r, 600)); // delay natural
+
+  if(uHash === VALID_USER && pHash === VALID_PASS){
+    sessionStorage.setItem(SESSION_KEY, "true");
+    // Animação de sucesso
+    btn.style.background = "#27ae60";
+    btn.querySelector(".btn-spinner").style.display = "none";
+    btn.innerHTML = "✓ Acessando...";
+    setTimeout(() => window.location.href = REDIRECT, 700);
+  } else {
+    btn.classList.remove("loading");
+    err.classList.add("show");
+    document.getElementById("inputPass").value = "";
+    document.getElementById("inputPass").focus();
+    // Shake no card
+    const card = document.querySelector(".card");
+    card.style.animation = "shake .3s ease";
+    setTimeout(() => card.style.animation = "", 300);
+  }
+}
+
+// Enter para logar
+document.addEventListener("keydown", e => { if(e.key === "Enter") doLogin(); });
+
+// Toggle mostrar senha
+function toggleEye(){
+  const input = document.getElementById("inputPass");
+  const icon  = document.getElementById("eyeIcon");
+  if(input.type === "password"){
+    input.type = "text";
+    icon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><line x1="1" y1="1" x2="23" y2="23"/>`;
+  } else {
+    input.type = "password";
+    icon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>`;
+  }
+}
+</script>
+
+<style>
+@keyframes shake{
+  0%,100%{transform:translateX(0)}
+  20%{transform:translateX(-8px)}
+  40%{transform:translateX(8px)}
+  60%{transform:translateX(-5px)}
+  80%{transform:translateX(5px)}
+}
+</style>
+</body>
+</html>
