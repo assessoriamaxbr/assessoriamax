@@ -6,7 +6,7 @@
 <title>Diagnóstico Personalizado · AssessoriaMax</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js" defer></script>
 <style>
 :root{
   --bg:#0a0a0a;
@@ -433,13 +433,12 @@ function loadLead(id){
   const existing = document.getElementById('_diag_script');
   if(existing) existing.remove();
   window._diagCallback = function(data){
-    const lead = (data.leads||[]).find(l => l.id === id);
-    if(!lead){ showError(); return; }
-    renderDiagnostico(lead);
+    if(!data || !data.found || !data.lead){ showError(); return; }
+    renderDiagnostico(data.lead);
   };
   const s = document.createElement('script');
   s.id = '_diag_script';
-  s.src = SHEET_URL + '?action=list&callback=_diagCallback&t=' + Date.now();
+  s.src = SHEET_URL + '?action=getOne&id=' + encodeURIComponent(id) + '&callback=_diagCallback&t=' + Date.now();
   s.onerror = showError;
   document.head.appendChild(s);
 
@@ -596,16 +595,23 @@ function renderDiagnostico(lead){
 // ============================================================
 // ============================================================
 //  config global do chart.js (tema escuro/dourado)
+//  — chamada de dentro de cada createXChart, porque o chart.js
+//  carrega com "defer" e pode não estar pronto no parse inicial
 // ============================================================
-if(window.Chart){
+let _chartDefaultsSet = false;
+function ensureChartDefaults(){
+  if(_chartDefaultsSet || !window.Chart) return;
   Chart.defaults.color = '#888888';
   Chart.defaults.font.family = "'Barlow', sans-serif";
   Chart.defaults.font.size = 11;
+  _chartDefaultsSet = true;
 }
 let _charts = {};
 function killChart(id){ if(_charts[id]){ _charts[id].destroy(); delete _charts[id]; } }
 
 function createLeakChart(leaksComValor){
+  ensureChartDefaults();
+  if(typeof Chart==='undefined') return;
   killChart('leak');
   const ctx = document.getElementById('leakChart');
   if(!ctx) return;
@@ -630,6 +636,8 @@ function createLeakChart(leaksComValor){
 }
 
 function createTriagemChart(){
+  ensureChartDefaults();
+  if(typeof Chart==='undefined') return;
   killChart('triagem');
   const ctx = document.getElementById('triagemChart');
   if(!ctx) return;
@@ -641,6 +649,8 @@ function createTriagemChart(){
 }
 
 function createFunilChart(pilarFoco){
+  ensureChartDefaults();
+  if(typeof Chart==='undefined') return;
   killChart('funil');
   const ctx = document.getElementById('funilChart');
   if(!ctx) return;
@@ -663,6 +673,8 @@ function createFunilChart(pilarFoco){
 }
 
 function createProjBarChart(fInfo){
+  ensureChartDefaults();
+  if(typeof Chart==='undefined') return;
   killChart('projBar');
   const ctx = document.getElementById('projBarChart');
   if(!ctx) return;
@@ -683,6 +695,8 @@ function createProjBarChart(fInfo){
 }
 
 function createProjLineChart(fInfo){
+  ensureChartDefaults();
+  if(typeof Chart==='undefined') return;
   killChart('projLine');
   const ctx = document.getElementById('projLineChart');
   if(!ctx) return;
